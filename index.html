@@ -114,31 +114,46 @@
   <div id="blocksTableContainer" style="display: none;">
     <h2>Tablas Generadas</h2>
 
-    <!-- Primera Tabla: Verificación de Tipos de Bloques -->
-    <h3>1. Verificación de Tipos de Bloques</h3>
-    <table id="typesCheckTable">
-      <thead>
-        <tr>
-          <th>Bloque</th>
-          <th>Está presente</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+    <!--
+        
+        <h3>1. Verificación de Tipos de Bloques</h3>
+        <table id="typesCheckTable">
+          <thead>
+            <tr>
+              <th>Bloque</th>
+              <th>Está presente</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+    
+        <h3>2. Conteo de Bloques</h3>
+        <table id="blockCountTable">
+          <thead>
+            <tr>
+              <th>Tipo de Bloque</th>
+              <th>Cantidad</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
 
-    <!-- Segunda Tabla: Conteo de Bloques -->
-    <h3>2. Conteo de Bloques</h3>
-    <table id="blockCountTable">
-      <thead>
-        <tr>
-          <th>Tipo de Bloque</th>
-          <th>Cantidad</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+    -->
+
+
+    <table id="typesCheckTable">
+  <thead>
+    <tr>
+      <th>Tipo de Bloque</th>
+      <th>Presente</th>
+      <th>Cantidad</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
 
     <!-- Tercera Tabla: JSON Crudo -->
     <h3>3. JSON Crudo</h3>
@@ -296,8 +311,12 @@ function decodeOnly() {
   // 6. Generar retroalimentación
   generateFeedback(jsonData);
   
-  showTypesCheckTable(jsonData);
-  showBlockCountTable(jsonData);
+ // showTypesCheckTable(jsonData);
+ // showBlockCountTable(jsonData);
+
+ showUnifiedBlockTable(jsonData);
+
+  
   showRawJsonTable(jsonData);
 }
     function redirectOnly() {
@@ -314,6 +333,9 @@ function decodeOnly() {
   window.open(fullUrl, '_blank'); // Abre en pestaña nueva
 }
 
+/*
+
+    
     function showTypesCheckTable(jsonData) {
       const requiredTypes = ['Vertical', 'Horizontal', 'Stone', 'Death', 'Sand'];
       const typesPresence = {};
@@ -388,6 +410,74 @@ function decodeOnly() {
           blockCounts[block.type]++;
         }
       });
+*/
+
+//UNIFIED TABLE
+
+function showUnifiedBlockTable(jsonData) {
+  const requiredTypes = ['Vertical', 'Horizontal', 'Stone', 'Death', 'Sand'];
+  const additionalTypes = ['coins', 'cup'];
+
+  // Inicializamos contador de bloques
+  const blockCounts = {
+    'Vertical': 0,
+    'Horizontal': 0,
+    'Stone': 0,
+    'Death': 0,
+    'Sand': 0,
+    'Coins': jsonData.coins?.length || 0,
+    'Cup': jsonData.cup?.length || 0
+  };
+
+  // Contamos los bloques del array blocks
+  jsonData.blocks.forEach(block => {
+    if (blockCounts.hasOwnProperty(block.type)) {
+      blockCounts[block.type]++;
+    }
+  });
+
+  // Creamos la tabla
+  const tableBody = document.querySelector('#typesCheckTable tbody');
+  tableBody.innerHTML = ''; // Limpiar tabla existente
+
+  // Unificamos tipos requeridos + adicionales
+  const allTypes = [...requiredTypes, ...additionalTypes];
+
+  allTypes.forEach(type => {
+    const row = document.createElement('tr');
+
+    // Nombre
+    const nameCell = document.createElement('td');
+    nameCell.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+    row.appendChild(nameCell);
+
+    // Presente
+    const presentCell = document.createElement('td');
+    const count = blockCounts[type.charAt(0).toUpperCase() + type.slice(1)] || 0;
+    presentCell.textContent = count > 0 ? '👍' : '👎';
+    row.appendChild(presentCell);
+
+    // Cantidad
+    const countCell = document.createElement('td');
+    countCell.textContent = count;
+    row.appendChild(countCell);
+
+    tableBody.appendChild(row);
+  });
+
+  // Agregamos fila resumen
+  const total = Object.values(blockCounts).reduce((a, b) => a + b, 0);
+  const summaryRow = document.createElement('tr');
+  summaryRow.innerHTML = `<td><strong>Total de elementos</strong></td><td></td><td><strong>${total}</strong></td>`;
+  tableBody.appendChild(summaryRow);
+}
+
+
+    
+//UNIFIED TABLE
+
+
+      
 
       const tableBody = document.querySelector('#blockCountTable tbody');
       tableBody.innerHTML = ''; // Limpiar la tabla antes de llenarla
