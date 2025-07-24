@@ -331,7 +331,7 @@ function decodeOnly() {
       });
 
       // Verificar si Cup y Coins están presentes
-      const hasCup = jsonData.hasOwnProperty('cup');
+      const hasCup = jsonData.hasOwnProperty('Cup');
       const hasCoins = jsonData.hasOwnProperty('coins');
       
       const allBlocksPresent = requiredTypes.every(type => typesPresence[type]) && hasCup && hasCoins;
